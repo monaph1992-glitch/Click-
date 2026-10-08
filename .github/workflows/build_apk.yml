@@ -35,9 +35,18 @@ jobs:
       - name: Build Web App
         run: npm run build
 
-      - name: Initialize & Sync Capacitor Android
+      - name: Create Capacitor JSON Config
         run: |
-          npx cap init "MatchSniper" "com.monaph.matchsniper" --web-dir dist
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.monaph.matchsniper",
+            "appName": "MatchSniper",
+            "webDir": "dist"
+          }
+          EOF
+
+      - name: Add Android Platform & Sync
+        run: |
           npx cap add android
           npx cap sync android
 
