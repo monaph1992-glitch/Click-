@@ -1,11 +1,9 @@
-name: Build Android APK
+name: Build Android APK from Web App
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch: # Isse aap manually bhi 'Run workflow' button daba kar APK bana sakte hain
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,22 +13,43 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'gradle'
 
-      - name: Grant Execute Permission to Gradlew
-        run: chmod +x gradlew
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Dependencies
+        run: |
+          npm install --legacy-peer-deps
+          npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Initialize & Sync Capacitor Android
+        run: |
+          npx cap init "MatchSniper" "com.monaph.matchsniper" --web-dir dist
+          npx cap add android
+          npx cap sync android
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: MatchSniper-APK
+          path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 7
