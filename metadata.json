@@ -1,0 +1,6 @@
+{
+  "name": "MatchSniper 1ms - Accessibility Distance Clicker",
+  "description": "Background accessibility screen auto-clicker for Android & Web. Instantly detects distances < 1.8 km or > 8.1 km and clicks the Match button in 1 millisecond with AMOLED battery optimization.",
+  "requestFramePermissions": ["display-capture"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
